@@ -1,0 +1,14 @@
+127.0.0.1 - - [11/Nov/2015:10:49:03 +0000] "GET / HTTP/1.0" 200 799 0.0123
+127.0.0.1 - - [11/Nov/2015:10:49:04 +0000] "GET /css/bootstrap.min.css HTTP/1.0" 304 - 0.0074
+127.0.0.1 - - [11/Nov/2015:10:52:19 +0000] "GET / HTTP/1.0" 200 799 0.0122
+127.0.0.1 - - [11/Nov/2015:10:52:19 +0000] "GET /css/bootstrap.min.css HTTP/1.0" 304 - 0.0004
+I, [2015-11-11T10:54:53.639406 #12173]  INFO -- : #<Mysql2::Result:0x0055c1d64707c8 @query_options={:as=>:hash, :async=>false, :cast_booleans=>false, :symbolize_keys=>true, :database_timezone=>:local, :application_timezone=>nil, :cache_rows=>true, :connect_flags=>2147525125, :cast=>true, :default_file=>nil, :default_group=>nil, :host=>"localhost", :port=>nil, :username=>"ishocon", :password=>"ishocon", :database=>"ishocon1", :reconnect=>true}>
+I, [2015-11-11T10:54:53.639502 #12173]  INFO -- : this is test
+I, [2015-11-11T10:55:24.579885 #12179]  INFO -- : #<Mysql2::Result:0x0055c1d6470110 @query_options={:as=>:hash, :async=>false, :cast_booleans=>false, :symbolize_keys=>true, :database_timezone=>:local, :application_timezone=>nil, :cache_rows=>true, :connect_flags=>2147525125, :cast=>true, :default_file=>nil, :default_group=>nil, :host=>"localhost", :port=>nil, :username=>"ishocon", :password=>"ishocon", :database=>"ishocon1", :reconnect=>true}>
+I, [2015-11-11T10:55:24.580026 #12179]  INFO -- : this is test
+I, [2015-11-11T11:00:00.164428 #12372]  INFO -- : {:id=>10000}
+I, [2015-11-11T11:00:00.164507 #12372]  INFO -- : this is test
+I, [2015-11-11T11:00:31.364550 #12418]  INFO -- : [10000, 9999, 9998, 9997, 9996, 9995, 9994, 9993, 9992, 9991, 9990, 9989, 9988, 9987, 9986, 9985, 9984, 9983, 9982, 9981, 9980, 9979, 9978, 9977, 9976, 9975, 9974, 9973, 9972, 9971, 9970, 9969, 9968, 9967, 9966, 9965, 9964, 9963, 9962, 9961, 9960, 9959, 9958, 9957, 9956, 9955, 9954, 9953, 9952, 9951]
+I, [2015-11-11T11:00:31.368551 #12418]  INFO -- : this is test
+I, [2015-11-11T11:01:19.531978 #12415]  INFO -- : [10000, 9999, 9998, 9997, 9996, 9995, 9994, 9993, 9992, 9991, 9990, 9989, 9988, 9987, 9986, 9985, 9984, 9983, 9982, 9981, 9980, 9979, 9978, 9977, 9976, 9975, 9974, 9973, 9972, 9971, 9970, 9969, 9968, 9967, 9966, 9965, 9964, 9963, 9962, 9961, 9960, 9959, 9958, 9957, 9956, 9955, 9954, 9953, 9952, 9951]
+I, [2015-11-11T11:01:19.532061 #12415]  INFO -- : this is test
