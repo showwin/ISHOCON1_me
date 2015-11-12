@@ -115,17 +115,15 @@ class Ishocon1::WebApp < Sinatra::Base
     authenticate(params['email'], params['password'])
     
     # index と一緒
-    page = params[:page].to_i || 0
-
-    result = db.xquery("SELECT id FROM products ORDER BY id DESC LIMIT 50 OFFSET #{page * 50}")
-    product_ids = result.map { |r| r[:id] }
-    query = <<SQL
-SELECT id, name, image_path, price, LEFT(description, 70) as description
-FROM products
-WHERE id in (?)
-ORDER BY id DESC
-SQL
-    products = db.xquery(query, product_ids)
+    products = db.xquery("SELECT * FROM products_0 order by id desc")
+    #product_ids = result.map { |r| r[:id] }
+    #query = <<SQL
+#SELECT *
+#FROM products_short
+#WHERE id in (?)
+#ORDER BY id DESC
+#SQL
+    #products = db.xquery(query, product_ids)
     
     erb :index, locals: { products: products }
   end
@@ -139,15 +137,15 @@ SQL
   get '/' do
     page = params[:page].to_i || 0
 
-    result = db.xquery("SELECT id FROM products ORDER BY id DESC LIMIT 50 OFFSET #{page * 50}")
-    product_ids = result.map { |r| r[:id] }
-    query = <<SQL
-SELECT id, name, image_path, price, LEFT(description, 70) as description
-FROM products
-WHERE id in (?)
-ORDER BY id DESC
-SQL
-    products = db.xquery(query, product_ids)
+    products = db.xquery("SELECT * FROM products_#{page} ORDER BY id DESC")
+    #product_ids = result.map { |r| r[:id] }
+    #query = <<SQL
+#SELECT *
+#FROM products_short
+#WHERE id in (?)
+#ORDER BY id DESC
+#SQL
+    #products = db.xquery(query, product_ids)
     
     #cmt_query = <<SQL
 #SELECT LEFT(content, 26), user_id
@@ -171,9 +169,9 @@ SQL
     his_ids = result.map { |r| r[:id] }
 
     products_query = <<SQL
-SELECT p.id, p.name, p.description, p.image_path, p.price, h.created_at
+SELECT p.*, h.created_at
 FROM histories as h
-LEFT OUTER JOIN products as p
+LEFT OUTER JOIN products_short as p
 ON h.product_id = p.id
 WHERE h.id in (?)
 ORDER BY h.id DESC
@@ -191,8 +189,7 @@ SQL
 
   get '/products/:product_id' do
     product = db.xquery('SELECT * FROM products WHERE id = ?', params[:product_id]).first
-    comments = db.xquery('SELECT * FROM comments WHERE product_id = ?', params[:product_id])
-    erb :product, locals: { product: product, comments: comments }
+    erb :product, locals: { product: product }
   end
 
   post '/products/buy/:product_id' do
