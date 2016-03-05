@@ -1,4 +1,5 @@
-{{ define "content" }}
+{{ define "product" }}
+{{ template "header" . }}
 <div class="jumbotron">
   <div class="container">
     <h2>{{ .Product.Name }}</h2>
@@ -18,4 +19,5 @@
     </div>
   </div>
 </div>
+{{ template "footer" . }}
 {{ end }}

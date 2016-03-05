@@ -1,6 +1,8 @@
 package main
 
 import (
+	"gopkg.in/redis.v3"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/contrib/sessions"
@@ -15,9 +17,15 @@ type User struct {
 	LastLogin string
 }
 
+var cli = redis.NewClient(&redis.Options{
+	Addr:     "localhost:6379",
+	Password: "",
+	DB:       0,
+})
+
 func authenticate(email string, password string) (User, bool) {
 	var u User
-	err := db.QueryRow("SELECT * FROM users WHERE email = ? LIMIT 1", email).Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.LastLogin)
+	err := db.QueryRow("SELECT * FROM users WHERE email = '"+email+"' LIMIT 1").Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.LastLogin)
 	if err != nil {
 		return u, false
 	}
@@ -27,12 +35,16 @@ func authenticate(email string, password string) (User, bool) {
 
 func notAuthenticated(session sessions.Session) bool {
 	uid := session.Get("uid")
-	return !(uid.(int) > 0)
+	if uid == nil {
+		return true
+	} else {
+		return false
+	}
 }
 
 func getUser(uid int) User {
 	u := User{}
-	r := db.QueryRow("SELECT * FROM users WHERE id = ? LIMIT 1", uid)
+	r := db.QueryRow("SELECT * FROM users WHERE id = " + strconv.Itoa(uid) + " LIMIT 1")
 	err := r.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.LastLogin)
 	if err != nil {
 		return u
@@ -53,15 +65,36 @@ func currentUser(session sessions.Session) User {
 	return u
 }
 
+func currentUserRedis(session sessions.Session) User {
+	uid := session.Get("uid")
+	if uid == nil {
+		return User{}
+	}
+	name, _ := cli.Get(strconv.Itoa(uid.(int)) + "u").Result()
+	return User{ID: uid.(int), Name: name}
+}
+
 // BuyingHistory : products which user had bought
 func (u *User) BuyingHistory() (products []Product) {
-	rows, err := db.Query(
-		"SELECT p.id, p.name, p.description, p.image_path, p.price, h.created_at "+
-			"FROM histories as h "+
-			"LEFT OUTER JOIN products as p "+
-			"ON h.product_id = p.id "+
-			"WHERE h.user_id = ? "+
-			"ORDER BY h.id DESC", u.ID)
+
+	list, _ := cli.LRange(strconv.Itoa(u.ID)+"l", 0, 29).Result()
+
+	var pids string
+
+	for _, id := range list {
+		pids = pids + id + ","
+	}
+
+	pids = pids + "99999"
+	rows, err := db.Query("SELECT * FROM products_short WHERE id in (" + pids + ") ORDER BY FIELD(id, " + pids + ")")
+
+	//rows, err := db.Query(
+	//	"SELECT p.id, p.name, p.description, p.image_path, p.price, h.created_at "+
+	//		"FROM histories as h "+
+	//		"INNER JOIN products_short as p "+
+	//		"ON h.product_id = p.id "+
+	//		"WHERE h.user_id = ? "+
+	//		"ORDER BY h.id DESC LIMIT 30", u.ID)
 	if err != nil {
 		return nil
 	}
@@ -71,9 +104,10 @@ func (u *User) BuyingHistory() (products []Product) {
 		p := Product{}
 		var cAt string
 		fmt := "2006-01-02 15:04:05"
+		//err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.ImagePath, &p.Price, &cAt)
 		err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.ImagePath, &p.Price, &cAt)
-		tmp, _ := time.Parse(fmt, cAt)
-		p.CreatedAt = (tmp.Add(9 * time.Hour)).Format(fmt)
+		//tmp, _ := time.Parse(fmt, cAt)
+		p.CreatedAt = (time.Now()).Format(fmt)
 		if err != nil {
 			panic(err.Error())
 		}
